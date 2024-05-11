@@ -24,7 +24,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/admin", adminRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use((error, req, res) => {
   console.log(error);
