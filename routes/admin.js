@@ -3,7 +3,6 @@ const { body } = require("express-validator");
 
 const adminControllers = require("../controllers/admin");
 const {
-  noSpecialCharsNoWhiteSpacesAtTheStartAndAtTheEndRegex,
   passwordRegex,
   onlyAlphaNumericsAndUnderscores,
 } = require("../util/regex");
@@ -67,7 +66,18 @@ router.post(
   body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
   body("email").optional().isEmail().normalizeEmail(),
   body("name").optional().trim().isLength({ min: 3 }).escape(),
-  body("expertise").optional().trim().escape(),
+  body("expertise")
+    .optional()
+    .isArray()
+    .custom((value) => {
+      for (const [index, element] of value) {
+        if (typeof element !== "string") {
+          throw new Error("Invalid element found in the array");
+        }
+        value[index] = element.trim();
+      }
+      return true;
+    }),
   body("contactDetails").optional(),
   adminControllers.createTutor
 );
@@ -83,7 +93,18 @@ router.put(
   body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
   body("email").optional().isEmail().normalizeEmail(),
   body("name").optional().trim().isLength({ min: 3 }).escape(),
-  body("expertise").optional().trim().escape(),
+  body("expertise")
+    .optional()
+    .isArray()
+    .custom((value) => {
+      for (const [index, element] of value) {
+        if (typeof element !== "string") {
+          throw new Error("Invalid element found in the array");
+        }
+        value[index] = element.trim();
+      }
+      return true;
+    }),
   body("contactDetails").optional(),
   adminControllers.updateTutor
 );

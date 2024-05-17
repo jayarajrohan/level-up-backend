@@ -42,6 +42,58 @@ const contactDetailsSchema = new Schema(
   { _id: false }
 );
 
+const availabilitySchema = new Schema(
+  {
+    availableDay: {
+      type: String,
+      required: true,
+    },
+    timeRange: {
+      type: new Schema(
+        {
+          fromHour: {
+            type: Number,
+            required: true,
+          },
+          fromMinute: {
+            type: Number,
+            required: true,
+          },
+          toHour: {
+            type: Number,
+            required: true,
+          },
+          toMinute: {
+            type: Number,
+            required: true,
+          },
+        },
+        { _id: false }
+      ),
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
+const studentSchema = new Schema(
+  {
+    username: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: false,
+    },
+    date: {
+      type: Date,
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
 const tutorSchema = new Schema(
   {
     username: {
@@ -64,13 +116,18 @@ const tutorSchema = new Schema(
       type: [String],
       required: false,
     },
-    availability: {
-      type: Boolean,
-      required: false,
-    },
     contactDetails: {
       type: contactDetailsSchema,
       required: false,
+    },
+    availability: {
+      type: [availabilitySchema],
+      required: false,
+    },
+    students: {
+      type: [studentSchema],
+      required: true,
+      default: [],
     },
   },
   { timestamps: true }

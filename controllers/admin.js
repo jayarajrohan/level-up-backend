@@ -304,7 +304,6 @@ exports.createTutor = (req, res, next) => {
             name: data.name,
             email: data.email,
             expertise: data.expertise,
-            availability: data.availability,
             contactDetails: data.contactDetails,
           });
 
@@ -367,7 +366,6 @@ exports.updateTutor = (req, res, next) => {
           tutorDoc.name = data.name;
           tutorDoc.email = data.email;
           tutorDoc.expertise = data.expertise;
-          tutorDoc.availability = data.availability;
           tutorDoc.contactDetails = data.contactDetails;
 
           return tutorDoc.save();

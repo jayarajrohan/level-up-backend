@@ -5,6 +5,7 @@ const helmet = require("helmet");
 const compression = require("compression");
 
 const adminRoutes = require("./routes/admin");
+const tutorRoutes = require("./routes/tutor");
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/admin", adminRoutes);
+app.use("/api/tutor", tutorRoutes);
 
 app.use((error, req, res) => {
   console.log(error);
