@@ -78,6 +78,10 @@ const availabilitySchema = new Schema(
 
 const studentSchema = new Schema(
   {
+    id: {
+      type: Schema.Types.ObjectId,
+      required: true,
+    },
     username: {
       type: String,
       required: true,
@@ -86,8 +90,12 @@ const studentSchema = new Schema(
       type: String,
       required: false,
     },
-    date: {
+    recentDate: {
       type: Date,
+      required: true,
+    },
+    count: {
+      type: Number,
       required: true,
     },
   },

@@ -47,16 +47,8 @@ router.put(
       return true;
     }),
   body("contactDetails").optional(),
-  tutorControllers.updateTutor
-);
-
-router.get("/view-availability/:id", isAuth, tutorControllers.getAvailability);
-
-router.put(
-  "/update-availability/:id",
-  isAuth,
   body("availability").isArray(),
-  tutorControllers.updateAvailability
+  tutorControllers.updateTutor
 );
 
 router.get(
@@ -64,5 +56,7 @@ router.get(
   isAuth,
   tutorControllers.getProfileViewedStudents
 );
+
+router.get("/profile/:id", isAuth, tutorControllers.getProfile);
 
 module.exports = router;

@@ -53,6 +53,7 @@ exports.login = (req, res, next) => {
 
       res.status(200).json({
         token: token,
+        role: "TUTOR",
         tutor: {
           id: foundTutor._id.toString(),
         },
@@ -127,6 +128,7 @@ exports.updateTutor = (req, res, next) => {
           tutorDoc.email = data.email;
           tutorDoc.expertise = data.expertise;
           tutorDoc.contactDetails = data.contactDetails;
+          tutorDoc.availability = data.availability;
 
           return tutorDoc.save();
         })
@@ -135,78 +137,6 @@ exports.updateTutor = (req, res, next) => {
             .status(200)
             .json({ message: "Tutor updated", id: tutor._id.toString() });
         });
-    })
-    .catch((error) => {
-      if (!error.statusCode) {
-        error.statusCode = 500;
-      }
-      next(error);
-    });
-};
-
-exports.updateAvailability = (req, res, next) => {
-  const tutorId = req.params.id;
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const error = new Error("Validation failed");
-    error.statusCode = 400;
-    error.data = errors.array();
-    throw error;
-  }
-
-  if (req.role !== "tutor") {
-    const error = new Error("Unauthorized");
-    error.statusCode = 401;
-    throw error;
-  }
-
-  const data = matchedData(req);
-
-  Tutor.findById(tutorId)
-    .then(async (tutorDoc) => {
-      if (!tutorDoc) {
-        const error = new Error("Tutor does not exist");
-        error.statusCode = 404;
-        throw error;
-      }
-      tutorDoc.availability = data.availability;
-      return tutorDoc.save();
-    })
-    .then((tutor) => {
-      res.status(200).json({
-        message: "Tutor availability updated",
-        availability: tutor.availability,
-      });
-    })
-    .catch((error) => {
-      if (!error.statusCode) {
-        error.statusCode = 500;
-      }
-      next(error);
-    });
-};
-
-exports.getAvailability = (req, res, next) => {
-  const tutorId = req.params.id;
-
-  if (req.role !== "tutor") {
-    const error = new Error("Unauthorized");
-    error.statusCode = 401;
-    throw error;
-  }
-
-  Tutor.findById(tutorId)
-    .then(async (tutorDoc) => {
-      if (!tutorDoc) {
-        const error = new Error("Tutor does not exist");
-        error.statusCode = 404;
-        throw error;
-      }
-
-      res.status(200).json({
-        message: "Availability Fetched Successfully",
-        availability: tutorDoc.availability,
-      });
     })
     .catch((error) => {
       if (!error.statusCode) {
@@ -236,6 +166,35 @@ exports.getProfileViewedStudents = (req, res, next) => {
         message: "Profile Viewed Students Fetched Successfully",
         students: tutorDoc.students,
       });
+    })
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
+
+exports.getProfile = (req, res, next) => {
+  if (req.role !== "tutor") {
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const tutorId = req.params.id;
+
+  Tutor.findById(tutorId)
+    .then((tutorDoc) => {
+      if (!tutorDoc) {
+        const error = new Error("Tutor does not exist");
+        error.statusCode = 404;
+        throw error;
+      }
+
+      res
+        .status(200)
+        .json({ message: "Tutor fetched successfully", tutor: tutorDoc });
     })
     .catch((error) => {
       if (!error.statusCode) {

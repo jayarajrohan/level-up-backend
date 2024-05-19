@@ -56,6 +56,7 @@ exports.login = (req, res, next) => {
 
       res.status(200).json({
         token: token,
+        role: "ADMIN",
         admin: {
           id: foundAdmin._id.toString(),
           firstName: foundAdmin.firstName,
