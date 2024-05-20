@@ -24,7 +24,7 @@ router.post(
 router.get("/logout", isAuth, tutorControllers.logout);
 
 router.put(
-  "/update/:id",
+  "/update",
   isAuth,
   body("username")
     .trim()
@@ -51,12 +51,8 @@ router.put(
   tutorControllers.updateTutor
 );
 
-router.get(
-  "/view-students/:id",
-  isAuth,
-  tutorControllers.getProfileViewedStudents
-);
+router.get("/view-students", isAuth, tutorControllers.getProfileViewedStudents);
 
-router.get("/profile/:id", isAuth, tutorControllers.getProfile);
+router.get("/profile", isAuth, tutorControllers.getProfile);
 
 module.exports = router;

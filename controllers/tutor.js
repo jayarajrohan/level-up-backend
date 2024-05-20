@@ -85,7 +85,7 @@ exports.logout = (req, res, next) => {
 };
 
 exports.updateTutor = (req, res, next) => {
-  const tutorId = req.params.id;
+  const tutorId = req.id;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Validation failed");
@@ -147,7 +147,7 @@ exports.updateTutor = (req, res, next) => {
 };
 
 exports.getProfileViewedStudents = (req, res, next) => {
-  const tutorId = req.params.id;
+  const tutorId = req.id;
 
   if (req.role !== "tutor") {
     const error = new Error("Unauthorized");
@@ -182,9 +182,9 @@ exports.getProfile = (req, res, next) => {
     throw error;
   }
 
-  const tutorId = req.params.id;
-
-  Tutor.findById(tutorId)
+  const tutorId = req.id;
+  const excludedField = "password";
+  Tutor.findById(tutorId, { [excludedField]: 0 })
     .then((tutorDoc) => {
       if (!tutorDoc) {
         const error = new Error("Tutor does not exist");
