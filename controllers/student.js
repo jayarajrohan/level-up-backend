@@ -358,9 +358,18 @@ exports.findTutor = (req, res, next) => {
   }
 
   if (data.courses.length === 0 && data.availability.length === 0) {
-    res.status(200).json({
-      tutors: [],
-    });
+    Tutor.find({}, excludedFields)
+      .then((tutors) => {
+        res.status(200).json({
+          tutors,
+        });
+      })
+      .catch((error) => {
+        if (!error.statusCode) {
+          error.statusCode = 500;
+        }
+        next(error);
+      });
   }
 
   if (data.courses.length !== 0 && data.availability.length !== 0) {
