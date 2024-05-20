@@ -1,7 +1,7 @@
 const express = require("express");
 const { body } = require("express-validator");
 
-const tutorControllers = require("../controllers/tutor");
+const studentController = require("../controllers/student");
 const {
   passwordRegex,
   onlyAlphaNumericsAndUnderscores,
@@ -18,10 +18,10 @@ router.post(
     .matches(onlyAlphaNumericsAndUnderscores)
     .escape(),
   body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
-  tutorControllers.login
+  studentController.login
 );
 
-router.get("/logout", isAuth, tutorControllers.logout);
+router.get("/logout", isAuth, studentController.logout);
 
 router.put(
   "/update",
@@ -32,27 +32,20 @@ router.put(
     .matches(onlyAlphaNumericsAndUnderscores)
     .escape(),
   body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
-  body("name").optional().trim().isLength({ min: 3 }).escape(),
   body("email").optional().isEmail().normalizeEmail(),
-  body("expertise")
-    .optional()
-    .isArray()
-    .custom((value) => {
-      for (const [index, element] of value) {
-        if (typeof element !== "string") {
-          throw new Error("Invalid element found in the array");
-        }
-        value[index] = element.trim();
-      }
-      return true;
-    }),
-  body("contactDetails").optional(),
-  body("availability").optional().isArray(),
-  tutorControllers.updateTutor
+  studentController.updateStudent
 );
 
-router.get("/view-students", isAuth, tutorControllers.getProfileViewedStudents);
+router.get("/profile", isAuth, studentController.getProfile);
 
-router.get("/profile", isAuth, tutorControllers.getProfile);
+router.get("/view-tutor/:tutorId", isAuth, studentController.viewTutor);
+
+router.post(
+  "/find-tutors",
+  isAuth,
+  body("courses").isArray(),
+  body("availability").isArray(),
+  studentController.findTutor
+);
 
 module.exports = router;

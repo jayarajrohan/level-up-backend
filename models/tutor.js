@@ -79,7 +79,7 @@ const availabilitySchema = new Schema(
 const studentSchema = new Schema(
   {
     id: {
-      type: Schema.Types.ObjectId,
+      type: String,
       required: true,
     },
     username: {
