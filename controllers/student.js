@@ -125,6 +125,7 @@ exports.updateStudent = (req, res, next) => {
         .then((hashedPassword) => {
           studentDoc.username = data.username;
           studentDoc.password = hashedPassword;
+          studentDoc.name = data.name;
           studentDoc.email = data.email;
 
           return studentDoc.save();

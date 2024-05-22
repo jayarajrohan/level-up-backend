@@ -120,6 +120,7 @@ exports.createStudent = (req, res, next) => {
           const student = new Student({
             username: data.username,
             email: data.email,
+            name: data.name,
             password: hashedPassword,
           });
 
@@ -179,6 +180,7 @@ exports.updateStudent = (req, res, next) => {
         .then((hashedPassword) => {
           studentDoc.username = data.username;
           studentDoc.email = data.email;
+          studentDoc.name = data.name;
           studentDoc.password = hashedPassword;
 
           return studentDoc.save();

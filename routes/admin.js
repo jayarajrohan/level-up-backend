@@ -32,6 +32,7 @@ router.post(
     .matches(onlyAlphaNumericsAndUnderscores)
     .escape(),
   body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
+  body("name").optional().trim().isLength({ min: 3 }).escape(),
   body("email").optional().isEmail().normalizeEmail(),
   adminControllers.createStudent
 );
@@ -45,6 +46,7 @@ router.put(
     .matches(onlyAlphaNumericsAndUnderscores)
     .escape(),
   body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
+  body("name").optional().trim().isLength({ min: 3 }).escape(),
   body("email").optional().trim().isEmail().normalizeEmail(),
   adminControllers.updateStudent
 );
