@@ -335,23 +335,18 @@ exports.updateTutor = (req, res, next) => {
         throw error;
       }
 
-      return bcrypt
-        .hash(data.password, 12)
-        .then((hashedPassword) => {
-          tutorDoc.username = data.username;
-          tutorDoc.password = hashedPassword;
-          tutorDoc.name = data.name;
-          tutorDoc.email = data.email;
-          tutorDoc.expertise = data.expertise;
-          tutorDoc.contactDetails = data.contactDetails;
+      tutorDoc.username = data.username;
+      tutorDoc.name = data.name;
+      tutorDoc.email = data.email;
+      tutorDoc.expertise = data.expertise;
+      tutorDoc.contactDetails = data.contactDetails;
 
-          return tutorDoc.save();
-        })
-        .then((tutor) => {
-          res
-            .status(200)
-            .json({ message: "Tutor updated", id: tutor._id.toString() });
-        });
+      return tutorDoc.save();
+    })
+    .then((tutor) => {
+      res
+        .status(200)
+        .json({ message: "Tutor updated", id: tutor._id.toString() });
     })
     .catch((error) => {
       if (!error.statusCode) {
