@@ -54,7 +54,13 @@ router.put(
     .isLength({ min: 5 })
     .matches(onlyAlphaNumericsAndUnderscores)
     .escape(),
-  body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
+  body("password")
+    .optional()
+    .if((value) => value !== "")
+    .trim()
+    .isLength({ min: 6 })
+    .matches(passwordRegex)
+    .escape(),
   body("name")
     .optional()
     .if((value) => value !== "")
