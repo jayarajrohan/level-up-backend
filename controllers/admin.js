@@ -155,20 +155,9 @@ exports.updateStudent = (req, res, next) => {
         error.statusCode = 404;
         throw error;
       }
-
-      if (data.password) {
-        bcrypt.hash(data.password, 12).then((hashedPassword) => {
-          studentDoc.username = data.username;
-          studentDoc.email = data.email;
-          studentDoc.name = data.name;
-          studentDoc.password = hashedPassword;
-        });
-      } else {
-        studentDoc.username = data.username;
-        studentDoc.email = data.email;
-        studentDoc.name = data.name;
-      }
-
+      studentDoc.username = data.username;
+      studentDoc.email = data.email;
+      studentDoc.name = data.name;
       return studentDoc.save();
     })
     .then((student) => {
