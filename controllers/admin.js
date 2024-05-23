@@ -51,7 +51,7 @@ exports.login = (req, res, next) => {
       res.cookie("token", token, {
         httpOnly: process.env.COOKIE_SETTINGS_HTTP_ONLY === "true",
         secure: process.env.COOKIE_SETTINGS_SECURE === "true",
-        // sameSite: process.env.SAME_SITE,
+        sameSite: process.env.SAME_SITE,
       });
 
       res.status(200).json({
@@ -77,7 +77,7 @@ exports.logout = (req, res, next) => {
     res.clearCookie("token", {
       httpOnly: process.env.COOKIE_SETTINGS_HTTP_ONLY === "true",
       secure: process.env.COOKIE_SETTINGS_SECURE === "true",
-      // sameSite: process.env.SAME_SITE,
+      sameSite: process.env.SAME_SITE,
     });
 
     res.status(200).json({ message: "Logged out successfully" });
