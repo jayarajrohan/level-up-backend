@@ -55,8 +55,18 @@ router.put(
     .matches(onlyAlphaNumericsAndUnderscores)
     .escape(),
   body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
-  body("name").optional().trim().isLength({ min: 3 }).escape(),
-  body("email").optional().trim().isEmail().normalizeEmail(),
+  body("name")
+    .optional()
+    .if((value) => value !== "")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
+  body("email")
+    .optional()
+    .if((value) => value !== "")
+    .trim()
+    .isEmail()
+    .normalizeEmail(),
   adminControllers.updateStudent
 );
 
@@ -75,8 +85,17 @@ router.post(
     .matches(onlyAlphaNumericsAndUnderscores)
     .escape(),
   body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
-  body("email").optional().isEmail().normalizeEmail(),
-  body("name").optional().trim().isLength({ min: 3 }).escape(),
+  body("email")
+    .optional()
+    .if((value) => value !== "")
+    .isEmail()
+    .normalizeEmail(),
+  body("name")
+    .optional()
+    .if((value) => value !== "")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
   body("expertise")
     .optional()
     .isArray()
@@ -102,8 +121,17 @@ router.put(
     .matches(onlyAlphaNumericsAndUnderscores)
     .escape(),
   body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
-  body("email").optional().isEmail().normalizeEmail(),
-  body("name").optional().trim().isLength({ min: 3 }).escape(),
+  body("email")
+    .optional()
+    .if((value) => value !== "")
+    .isEmail()
+    .normalizeEmail(),
+  body("name")
+    .optional()
+    .if((value) => value !== "")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
   body("expertise")
     .optional()
     .isArray()
