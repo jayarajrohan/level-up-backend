@@ -1,9 +1,6 @@
 {
   "env": {
     "MONGO_DB_CONNECTION_STRING": "mongodb+srv://rohan:HIZM0yhu02sgItDw@level-up.c4tykf6.mongodb.net/level-up?retryWrites=true&w=majority&appName=level-up",
-    "COOKIE_SETTINGS_HTTP_ONLY": "true",
-    "COOKIE_SETTINGS_SECURE": "false",
-    "FRONTEND_SERVER": "http://localhost:8081",
-    "SAME_SITE": "lax"
+    "FRONTEND_SERVER": "http://localhost:8080"
   }
 }

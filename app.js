@@ -41,6 +41,6 @@ app.use((error, req, res) => {
 mongoose
   .connect(process.env.MONGO_DB_CONNECTION_STRING)
   .then(() => {
-    app.listen(process.env.PORT || 8080);
+    app.listen(process.env.PORT || 8081);
   })
   .catch((err) => console.log(err));

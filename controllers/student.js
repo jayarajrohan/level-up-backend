@@ -46,12 +46,6 @@ exports.login = (req, res, next) => {
         { expiresIn: "1h" }
       );
 
-      res.cookie("token", token, {
-        httpOnly: process.env.COOKIE_SETTINGS_HTTP_ONLY === "true",
-        secure: process.env.COOKIE_SETTINGS_SECURE === "true",
-        sameSite: process.env.SAME_SITE,
-      });
-
       res.status(200).json({
         token: token,
         role: "STUDENT",
@@ -69,20 +63,7 @@ exports.login = (req, res, next) => {
 };
 
 exports.logout = (req, res, next) => {
-  try {
-    res.clearCookie("token", {
-      httpOnly: process.env.COOKIE_SETTINGS_HTTP_ONLY === "true",
-      secure: process.env.COOKIE_SETTINGS_SECURE === "true",
-      sameSite: process.env.SAME_SITE,
-    });
-
-    res.status(200).json({ message: "Logged out successfully" });
-  } catch (error) {
-    if (!error.statusCode) {
-      error.statusCode = 500;
-    }
-    next(error);
-  }
+  res.status(200).json({ message: "Logged out successfully" });
 };
 
 exports.updateStudent = (req, res, next) => {
