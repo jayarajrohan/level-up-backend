@@ -167,7 +167,7 @@ router.put(
     .matches(passwordRegex)
     .escape(),
   body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
-  adminControllers.updateTutor
+  adminControllers.updateTutorPassword
 );
 
 router.delete("/tutor/delete/:id", isAuth, adminControllers.deleteTutor);
