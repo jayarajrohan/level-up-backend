@@ -173,6 +173,63 @@ exports.updateStudent = (req, res, next) => {
     });
 };
 
+exports.updateStudentPassword = (req, res, next) => {
+  const studentId = req.params.id;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error("Validation failed");
+    error.statusCode = 400;
+    error.data = errors.array();
+    throw error;
+  }
+
+  if (req.role !== "admin") {
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const data = matchedData(req);
+  let student;
+
+  Student.findById(studentId)
+    .then((studentDoc) => {
+      if (!studentDoc) {
+        const error = new Error("Student does not exist");
+        error.statusCode = 404;
+        throw error;
+      }
+      student = studentDoc;
+      return bcrypt.compare(data.currentPassword, studentDoc.password);
+    })
+    .then((isEqual) => {
+      if (!isEqual) {
+        const error = new Error("Current password is wrong");
+        error.statusCode = 401;
+        throw error;
+      }
+
+      bcrypt
+        .hash(data.password, 12)
+        .then((hashedPassword) => {
+          student.password = hashedPassword;
+          return student.save();
+        })
+        .then((student) => {
+          res.status(201).json({
+            message: "Student password updated",
+            id: student._id.toString(),
+          });
+        });
+    })
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
+
 exports.deleteStudent = (req, res, next) => {
   const studentId = req.params.id;
 
@@ -349,6 +406,63 @@ exports.updateTutor = (req, res, next) => {
       res
         .status(200)
         .json({ message: "Tutor updated", id: tutor._id.toString() });
+    })
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
+
+exports.updateTutorPassword = (req, res, next) => {
+  const tutorId = req.params.id;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error("Validation failed");
+    error.statusCode = 400;
+    error.data = errors.array();
+    throw error;
+  }
+
+  if (req.role !== "admin") {
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const data = matchedData(req);
+  let tutor;
+
+  Tutor.findById(tutorId)
+    .then((tutorDoc) => {
+      if (!tutorDoc) {
+        const error = new Error("Tutor does not exist");
+        error.statusCode = 404;
+        throw error;
+      }
+      tutor = tutorDoc;
+      return bcrypt.compare(data.currentPassword, tutorDoc.password);
+    })
+    .then((isEqual) => {
+      if (!isEqual) {
+        const error = new Error("Current password is wrong");
+        error.statusCode = 401;
+        throw error;
+      }
+
+      bcrypt
+        .hash(data.password, 12)
+        .then((hashedPassword) => {
+          tutor.password = hashedPassword;
+          return tutor.save();
+        })
+        .then((tutor) => {
+          res.status(201).json({
+            message: "Tutor password updated",
+            id: tutor._id.toString(),
+          });
+        });
     })
     .catch((error) => {
       if (!error.statusCode) {

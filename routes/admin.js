@@ -69,6 +69,18 @@ router.put(
   adminControllers.updateStudent
 );
 
+router.put(
+  "/student/update-password/:id",
+  isAuth,
+  body("currentPassword")
+    .trim()
+    .isLength({ min: 6 })
+    .matches(passwordRegex)
+    .escape(),
+  body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
+  adminControllers.updateStudentPassword
+);
+
 router.delete("/student/delete/:id", isAuth, adminControllers.deleteStudent);
 
 router.get("/students", isAuth, adminControllers.getStudents);
@@ -143,6 +155,18 @@ router.put(
       return true;
     }),
   body("contactDetails").optional(),
+  adminControllers.updateTutor
+);
+
+router.put(
+  "/tutor/update-password/:id",
+  isAuth,
+  body("currentPassword")
+    .trim()
+    .isLength({ min: 6 })
+    .matches(passwordRegex)
+    .escape(),
+  body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
   adminControllers.updateTutor
 );
 
