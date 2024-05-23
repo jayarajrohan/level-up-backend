@@ -227,7 +227,9 @@ exports.getStudent = (req, res, next) => {
 
   const studentId = req.params.id;
 
-  Student.findById(studentId)
+  const excludedField = "password";
+
+  Student.findById(studentId, { [excludedField]: 0 })
     .then((studentDoc) => {
       if (!studentDoc) {
         const error = new Error("Student does not exist");
@@ -410,7 +412,9 @@ exports.getTutor = (req, res, next) => {
 
   const tutorId = req.params.id;
 
-  Tutor.findById(tutorId)
+  const excludedField = "password";
+
+  Tutor.findById(tutorId, { [excludedField]: 0 })
     .then((tutorDoc) => {
       if (!tutorDoc) {
         const error = new Error("Tutor does not exist");
