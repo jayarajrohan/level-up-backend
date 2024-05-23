@@ -195,6 +195,7 @@ exports.viewTutor = (req, res, next) => {
       tutorDoc.students.push({
         id: foundStudent._id,
         username: foundStudent.username,
+        name: foundStudent.name,
         email: foundStudent.email,
         recentDate: new Date(),
         count: 1,
