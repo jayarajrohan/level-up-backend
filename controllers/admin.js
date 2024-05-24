@@ -205,7 +205,7 @@ exports.updateStudentPassword = (req, res, next) => {
     .then((isEqual) => {
       if (!isEqual) {
         const error = new Error("Current password is wrong");
-        error.statusCode = 401;
+        error.statusCode = 422;
         throw error;
       }
 
@@ -447,7 +447,7 @@ exports.updateTutorPassword = (req, res, next) => {
     .then((isEqual) => {
       if (!isEqual) {
         const error = new Error("Current password is wrong");
-        error.statusCode = 401;
+        error.statusCode = 422;
         throw error;
       }
 
