@@ -393,7 +393,6 @@ exports.updateTutor = (req, res, next) => {
         error.statusCode = 404;
         throw error;
       }
-
       tutorDoc.username = data.username;
       tutorDoc.name = data.name;
       tutorDoc.email = data.email;
@@ -570,8 +569,16 @@ exports.createCourse = (req, res, next) => {
     description: data.description,
   });
 
-  course
-    .save()
+  Course.findOne({ courseName: data.courseName })
+    .then((courseDoc) => {
+      if (courseDoc) {
+        const error = new Error("Course with same name already exist");
+        error.statusCode = 409;
+        throw error;
+      }
+
+      return course.save();
+    })
     .then((course) => {
       res
         .status(201)
