@@ -216,7 +216,7 @@ exports.updateStudentPassword = (req, res, next) => {
           return student.save();
         })
         .then((student) => {
-          res.status(201).json({
+          res.status(200).json({
             message: "Student password updated",
             id: student._id.toString(),
           });
@@ -458,7 +458,7 @@ exports.updateTutorPassword = (req, res, next) => {
           return tutor.save();
         })
         .then((tutor) => {
-          res.status(201).json({
+          res.status(200).json({
             message: "Tutor password updated",
             id: tutor._id.toString(),
           });
