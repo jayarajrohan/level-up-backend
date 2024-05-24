@@ -610,7 +610,16 @@ exports.updateCourse = (req, res, next) => {
 
   const data = matchedData(req);
 
-  Course.findById(courseId)
+  Course.findOne({ courseName: data.courseName })
+    .then((courseDoc) => {
+      if (courseDoc) {
+        const error = new Error("Course with same name already exist");
+        error.statusCode = 409;
+        throw error;
+      }
+
+      return Course.findById(courseId);
+    })
     .then((courseDoc) => {
       if (!courseDoc) {
         const error = new Error("Course does not exist");
