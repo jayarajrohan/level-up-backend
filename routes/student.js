@@ -31,9 +31,18 @@ router.put(
     .isLength({ min: 5 })
     .matches(onlyAlphaNumericsAndUnderscores)
     .escape(),
-  body("name").optional().trim().isLength({ min: 3 }).escape(),
+  body("name")
+    .optional()
+    .if((value) => value !== "")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
   body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
-  body("email").optional().isEmail().normalizeEmail(),
+  body("email")
+    .optional()
+    .if((value) => value !== "")
+    .isEmail()
+    .normalizeEmail(),
   studentController.updateStudent
 );
 
