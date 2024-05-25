@@ -59,6 +59,18 @@ router.put(
   tutorControllers.updateTutor
 );
 
+router.put(
+  "update-password",
+  isAuth,
+  body("currentPassword")
+    .trim()
+    .isLength({ min: 6 })
+    .matches(passwordRegex)
+    .escape(),
+  body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
+  tutorControllers.updatePassword
+);
+
 router.get("/view-students", isAuth, tutorControllers.getProfileViewedStudents);
 
 router.get("/profile", isAuth, tutorControllers.getProfile);
