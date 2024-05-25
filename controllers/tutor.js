@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const Tutor = require("../models/tutor");
+const Course = require("../models/course");
 const { jwtSecret } = require("../util/jwt-secret");
 
 exports.login = (req, res, next) => {
@@ -176,6 +177,27 @@ exports.getProfile = (req, res, next) => {
       res
         .status(200)
         .json({ message: "Tutor fetched successfully", tutor: tutorDoc });
+    })
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
+
+exports.getCourses = (req, res, next) => {
+  if (req.role !== "tutor") {
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  Course.find({})
+    .then((courses) => {
+      res
+        .status(200)
+        .json({ message: "Courses fetched successfully", courses: courses });
     })
     .catch((error) => {
       if (!error.statusCode) {
