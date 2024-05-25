@@ -102,21 +102,16 @@ exports.updateStudent = (req, res, next) => {
         throw error;
       }
 
-      return bcrypt
-        .hash(data.password, 12)
-        .then((hashedPassword) => {
-          studentDoc.username = data.username;
-          studentDoc.password = hashedPassword;
-          studentDoc.name = data.name;
-          studentDoc.email = data.email;
+      studentDoc.username = data.username;
+      studentDoc.name = data.name;
+      studentDoc.email = data.email;
 
-          return studentDoc.save();
-        })
-        .then((student) => {
-          res
-            .status(200)
-            .json({ message: "Student updated", id: student._id.toString() });
-        });
+      return studentDoc.save();
+    })
+    .then((student) => {
+      res
+        .status(200)
+        .json({ message: "Student updated", id: student._id.toString() });
     })
     .catch((error) => {
       if (!error.statusCode) {
