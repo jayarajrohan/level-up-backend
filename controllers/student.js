@@ -285,8 +285,6 @@ const isTutorAvailable = (tutor, studentAvailability) => {
 };
 
 exports.findTutor = (req, res, next) => {
-  const studentId = req.id;
-
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Validation failed");

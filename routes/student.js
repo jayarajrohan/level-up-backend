@@ -58,6 +58,6 @@ router.post(
   studentController.findTutor
 );
 
-router.get("/courses", isAuth, tutorControllers.getCourses);
+router.get("/courses", isAuth, studentController.getCourses);
 
 module.exports = router;
