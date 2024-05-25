@@ -37,13 +37,24 @@ router.put(
     .trim()
     .isLength({ min: 3 })
     .escape(),
-  body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
   body("email")
     .optional()
     .if((value) => value !== "")
     .isEmail()
     .normalizeEmail(),
   studentController.updateStudent
+);
+
+router.put(
+  "update-password",
+  isAuth,
+  body("currentPassword")
+    .trim()
+    .isLength({ min: 6 })
+    .matches(passwordRegex)
+    .escape(),
+  body("password").trim().isLength({ min: 6 }).matches(passwordRegex).escape(),
+  studentController.updatePassword
 );
 
 router.get("/profile", isAuth, studentController.getProfile);

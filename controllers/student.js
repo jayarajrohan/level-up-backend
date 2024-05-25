@@ -391,3 +391,60 @@ exports.getCourses = (req, res, next) => {
       next(error);
     });
 };
+
+exports.updatePassword = (req, res, next) => {
+  const studentId = req.id;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error("Validation failed");
+    error.statusCode = 400;
+    error.data = errors.array();
+    throw error;
+  }
+
+  if (req.role !== "student") {
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const data = matchedData(req);
+  let student;
+
+  Student.findById(studentId)
+    .then((studentDoc) => {
+      if (!studentDoc) {
+        const error = new Error("Student does not exist");
+        error.statusCode = 404;
+        throw error;
+      }
+      student = studentDoc;
+      return bcrypt.compare(data.currentPassword, tutorDoc.password);
+    })
+    .then((isEqual) => {
+      if (!isEqual) {
+        const error = new Error("Current password is wrong");
+        error.statusCode = 422;
+        throw error;
+      }
+
+      bcrypt
+        .hash(data.password, 12)
+        .then((hashedPassword) => {
+          student.password = hashedPassword;
+          return student.save();
+        })
+        .then((student) => {
+          res.status(200).json({
+            message: "Student password updated",
+            id: student._id.toString(),
+          });
+        });
+    })
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
