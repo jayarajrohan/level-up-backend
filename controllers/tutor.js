@@ -261,7 +261,7 @@ exports.updatePassword = (req, res, next) => {
 };
 
 exports.viewStudent = (req, res, next) => {
-  const studentId = req.params.studentId;
+  const studentId = req.params.id;
   if (req.role !== "tutor") {
     const error = new Error("Unauthorized");
     error.statusCode = 401;
