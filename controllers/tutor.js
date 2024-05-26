@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const Tutor = require("../models/tutor");
 const Course = require("../models/course");
+const Student = require("../models/student");
 const { jwtSecret } = require("../util/jwt-secret");
 
 exports.login = (req, res, next) => {
@@ -250,6 +251,35 @@ exports.updatePassword = (req, res, next) => {
             id: tutor._id.toString(),
           });
         });
+    })
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
+
+exports.viewStudent = (req, res, next) => {
+  const studentId = req.params.studentId;
+  if (req.role !== "tutor") {
+    const error = new Error("Unauthorized");
+    error.statusCode = 401;
+    throw error;
+  }
+
+  const excludedField = "password";
+  Student.findById(studentId, { [excludedField]: 0 })
+    .then((studentDoc) => {
+      if (!studentDoc) {
+        const error = new Error("Student does not exist");
+        error.statusCode = 404;
+        throw error;
+      }
+
+      res
+        .status(200)
+        .json({ message: "Student fetched successfully", student: studentDoc });
     })
     .catch((error) => {
       if (!error.statusCode) {

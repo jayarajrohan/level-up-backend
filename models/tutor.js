@@ -82,18 +82,6 @@ const studentSchema = new Schema(
       type: String,
       required: true,
     },
-    username: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: false,
-    },
-    email: {
-      type: String,
-      required: false,
-    },
     recentDate: {
       type: Date,
       required: true,

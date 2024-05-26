@@ -241,6 +241,9 @@ exports.deleteStudent = (req, res, next) => {
 
   Student.deleteOne({ _id: studentId })
     .then(() => {
+      return Tutor.updateMany({}, { $pull: { students: { id: studentId } } });
+    })
+    .then(() => {
       res.status(200).json({
         message: "Student deleted",
       });

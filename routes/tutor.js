@@ -77,4 +77,6 @@ router.get("/profile", isAuth, tutorControllers.getProfile);
 
 router.get("/courses", isAuth, tutorControllers.getCourses);
 
+router.get("/view-student/:id", isAuth, tutorControllers.viewStudent);
+
 module.exports = router;
