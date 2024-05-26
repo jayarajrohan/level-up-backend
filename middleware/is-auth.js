@@ -4,7 +4,6 @@ const { jwtSecret } = require("../util/jwt-secret");
 module.exports = (req, res, next) => {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(" ")[1];
-  console.log(token);
 
   if (!token) {
     const error = new Error("Not authenticated");

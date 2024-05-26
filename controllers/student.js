@@ -140,7 +140,7 @@ exports.getProfile = (req, res, next) => {
 
       res
         .status(200)
-        .json({ message: "Student fetched successfully", tutor: studentDoc });
+        .json({ message: "Student fetched successfully", student: studentDoc });
     })
     .catch((error) => {
       if (!error.statusCode) {
@@ -411,8 +411,6 @@ exports.updatePassword = (req, res, next) => {
   const data = matchedData(req);
   let student;
 
-  console.log(studentId);
-
   Student.findById(studentId)
     .then((studentDoc) => {
       if (!studentDoc) {
@@ -421,7 +419,7 @@ exports.updatePassword = (req, res, next) => {
         throw error;
       }
       student = studentDoc;
-      return bcrypt.compare(data.currentPassword, tutorDoc.password);
+      return bcrypt.compare(data.currentPassword, studentDoc.password);
     })
     .then((isEqual) => {
       if (!isEqual) {
@@ -433,7 +431,6 @@ exports.updatePassword = (req, res, next) => {
       return bcrypt.hash(data.password, 12);
     })
     .then((hashedPassword) => {
-      console.log(student);
       student.password = hashedPassword;
       return student.save();
     })
