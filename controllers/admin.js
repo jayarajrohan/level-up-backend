@@ -721,7 +721,7 @@ exports.getCourse = (req, res, next) => {
     });
 };
 
-exports.getAdminDashboardDetails = async (req, res, next) => {
+exports.getAdminDashboardDetails = (req, res, next) => {
   if (req.role !== "admin") {
     const error = new Error("Forbidden");
     error.statusCode = 403;
@@ -732,39 +732,30 @@ exports.getAdminDashboardDetails = async (req, res, next) => {
   let tutorsCount;
   let coursesCount;
 
-  await Student.countDocuments({})
-    .then((count) => (studentsCount = count))
+  Student.countDocuments({})
+    .then((count) => {
+      studentsCount = count;
+      return Tutor.countDocuments({});
+    })
+    .then((count) => {
+      tutorsCount = count;
+      return Course.countDocuments({});
+    })
+    .then((count) => {
+      coursesCount = count;
+      res.status(200).json({
+        message: "Admin dashboard details fetched successfully",
+        dashboardDetails: {
+          studentsCount,
+          tutorsCount,
+          coursesCount,
+        },
+      });
+    })
     .catch((error) => {
       if (!error.statusCode) {
         error.statusCode = 500;
       }
       next(error);
     });
-
-  await Tutor.countDocuments({})
-    .then((count) => (tutorsCount = count))
-    .catch((error) => {
-      if (!error.statusCode) {
-        error.statusCode = 500;
-      }
-      next(error);
-    });
-
-  await Course.countDocuments({})
-    .then((count) => (coursesCount = count))
-    .catch((error) => {
-      if (!error.statusCode) {
-        error.statusCode = 500;
-      }
-      next(error);
-    });
-
-  res.status(200).json({
-    message: "Admin dashboard details fetched successfully",
-    dashboardDetails: {
-      studentsCount,
-      tutorsCount,
-      coursesCount,
-    },
-  });
 };
