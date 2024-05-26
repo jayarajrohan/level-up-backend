@@ -411,6 +411,8 @@ exports.updatePassword = (req, res, next) => {
   const data = matchedData(req);
   let student;
 
+  console.log(studentId);
+
   Student.findById(studentId)
     .then((studentDoc) => {
       if (!studentDoc) {
@@ -431,6 +433,7 @@ exports.updatePassword = (req, res, next) => {
       return bcrypt.hash(data.password, 12);
     })
     .then((hashedPassword) => {
+      console.log(student);
       student.password = hashedPassword;
       return student.save();
     })
