@@ -78,8 +78,8 @@ exports.updateTutor = (req, res, next) => {
   }
 
   if (req.role !== "tutor") {
-    const error = new Error("Unauthorized");
-    error.statusCode = 401;
+    const error = new Error("Forbidden");
+    error.statusCode = 403;
     throw error;
   }
 
@@ -128,8 +128,8 @@ exports.getProfileViewedStudents = (req, res, next) => {
   const tutorId = req.id;
 
   if (req.role !== "tutor") {
-    const error = new Error("Unauthorized");
-    error.statusCode = 401;
+    const error = new Error("Forbidden");
+    error.statusCode = 403;
     throw error;
   }
 
@@ -155,8 +155,8 @@ exports.getProfileViewedStudents = (req, res, next) => {
 
 exports.getProfile = (req, res, next) => {
   if (req.role !== "tutor") {
-    const error = new Error("Unauthorized");
-    error.statusCode = 401;
+    const error = new Error("Forbidden");
+    error.statusCode = 403;
     throw error;
   }
 
@@ -184,8 +184,8 @@ exports.getProfile = (req, res, next) => {
 
 exports.getCourses = (req, res, next) => {
   if (req.role !== "tutor") {
-    const error = new Error("Unauthorized");
-    error.statusCode = 401;
+    const error = new Error("Forbidden");
+    error.statusCode = 403;
     throw error;
   }
 
@@ -214,8 +214,8 @@ exports.updatePassword = (req, res, next) => {
   }
 
   if (req.role !== "tutor") {
-    const error = new Error("Unauthorized");
-    error.statusCode = 401;
+    const error = new Error("Forbidden");
+    error.statusCode = 403;
     throw error;
   }
 
@@ -263,8 +263,8 @@ exports.updatePassword = (req, res, next) => {
 exports.viewStudent = (req, res, next) => {
   const studentId = req.params.id;
   if (req.role !== "tutor") {
-    const error = new Error("Unauthorized");
-    error.statusCode = 401;
+    const error = new Error("Forbidden");
+    error.statusCode = 403;
     throw error;
   }
 
