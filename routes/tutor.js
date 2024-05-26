@@ -60,7 +60,7 @@ router.put(
 );
 
 router.put(
-  "update-password",
+  "/update-password",
   isAuth,
   body("currentPassword")
     .trim()
