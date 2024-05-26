@@ -428,18 +428,17 @@ exports.updatePassword = (req, res, next) => {
         throw error;
       }
 
-      bcrypt
-        .hash(data.password, 12)
-        .then((hashedPassword) => {
-          student.password = hashedPassword;
-          return student.save();
-        })
-        .then((student) => {
-          res.status(200).json({
-            message: "Student password updated",
-            id: student._id.toString(),
-          });
-        });
+      return bcrypt.hash(data.password, 12);
+    })
+    .then((hashedPassword) => {
+      student.password = hashedPassword;
+      return student.save();
+    })
+    .then((student) => {
+      res.status(200).json({
+        message: "Student password updated",
+        id: student._id.toString(),
+      });
     })
     .catch((error) => {
       if (!error.statusCode) {
