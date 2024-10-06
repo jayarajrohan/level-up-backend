@@ -73,6 +73,19 @@ router.put(
 
 router.get("/view-students", isAuth, tutorControllers.getProfileViewedStudents);
 
+router.get(
+  "/connection-requests",
+  isAuth,
+  tutorControllers.getPendingConnectionRequests
+);
+
+router.post(
+  "/request/:studentId",
+  isAuth,
+  body("status").isIn(["accepted", "rejected"]),
+  tutorControllers.handleConnectionRequest
+);
+
 router.get("/profile", isAuth, tutorControllers.getProfile);
 
 router.get("/courses", isAuth, tutorControllers.getCourses);

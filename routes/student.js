@@ -71,4 +71,6 @@ router.post(
 
 router.get("/courses", isAuth, studentController.getCourses);
 
+router.get("/connect-tutor/:tutorId", isAuth, studentController.connectTutor);
+
 module.exports = router;

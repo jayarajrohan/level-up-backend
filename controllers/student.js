@@ -50,7 +50,7 @@ exports.login = (req, res, next) => {
       res.status(200).json({
         token: token,
         role: "STUDENT",
-        tutor: {
+        student: {
           id: foundStudent._id.toString(),
         },
       });
@@ -200,9 +200,101 @@ exports.viewTutor = (req, res, next) => {
       const tutor = { ...tutorDoc.toObject() };
       delete tutor.students;
 
+      const isStudentConnectedWithTutor = tutor.studentRequests.find(
+        (rs) => rs.id === req.id
+      );
+
+      delete tutor.studentRequests;
+
+      if (
+        !isStudentConnectedWithTutor ||
+        isStudentConnectedWithTutor.requestStatus !== "accepted"
+      ) {
+        delete tutor.contactDetails;
+      }
+
       res.status(200).json({
         message: "Tutor details fetched successfully",
         tutor: tutor,
+      });
+    })
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
+
+exports.connectTutor = (req, res, next) => {
+  const tutorId = req.params.tutorId;
+  const studentId = req.id;
+  if (req.role !== "student") {
+    const error = new Error("Forbidden");
+    error.statusCode = 403;
+    throw error;
+  }
+
+  let foundStudent;
+  const excludedField = "password";
+  Student.findById(studentId)
+    .then((studentDoc) => {
+      if (!studentDoc) {
+        const error = new Error("Student does not exist");
+        error.statusCode = 404;
+        throw error;
+      }
+      foundStudent = studentDoc;
+      return Tutor.findById(tutorId, { [excludedField]: 0 });
+    })
+    .then((tutorDoc) => {
+      if (!tutorDoc) {
+        const error = new Error("Tutor does not exist");
+        error.statusCode = 404;
+        throw error;
+      }
+
+      const isStudent = tutorDoc.studentRequests.find(
+        (student) => student.id === studentId
+      );
+
+      if (isStudent) {
+        if (isStudent.requestStatus === "accepted") {
+          const error = new Error("You are already connected with the tutor");
+          error.statusCode = 409;
+          throw error;
+        } else if (isStudent.requestStatus === "pending") {
+          const error = new Error("Another request already pending");
+          error.statusCode = 409;
+          throw error;
+        } else if (
+          isStudent.requestStatus === "rejected" &&
+          moment(new Date()).diff(moment(isStudent.requestDate), "seconds") <=
+            604800
+        ) {
+          const error = new Error(
+            "You have to wait 7 days from your last request to send a new request"
+          );
+          error.statusCode = 409;
+          throw error;
+        }
+
+        isStudent.requestDate = new Date();
+        isStudent.requestStatus = "pending";
+        return tutorDoc.save();
+      }
+
+      tutorDoc.studentRequests.push({
+        id: foundStudent._id,
+        requestDate: new Date(),
+        requestStatus: "pending",
+      });
+
+      return tutorDoc.save();
+    })
+    .then(() => {
+      res.status(200).json({
+        message: "Connection request sent successfully",
       });
     })
     .catch((error) => {
@@ -301,7 +393,19 @@ exports.findTutor = (req, res, next) => {
         );
 
         res.status(200).json({
-          tutors: filteredTutors,
+          tutors: filteredTutors.map((ft) => {
+            const doc = ft.toObject();
+            const isStudentConnectedWithTutor = doc.studentRequests.find(
+              (rs) => rs.id === req.id
+            );
+
+            delete doc.studentRequests;
+
+            return {
+              ...doc,
+              requestStatusWithTutor: isStudentConnectedWithTutor || false,
+            };
+          }),
         });
       })
       .catch((error) => {
@@ -320,7 +424,19 @@ exports.findTutor = (req, res, next) => {
         );
 
         res.status(200).json({
-          tutors: filteredTutors,
+          tutors: filteredTutors.map((ft) => {
+            const doc = ft.toObject();
+            const isStudentConnectedWithTutor = doc.studentRequests.find(
+              (rs) => rs.id === req.id
+            );
+
+            delete doc.studentRequests;
+
+            return {
+              ...doc,
+              requestStatusWithTutor: isStudentConnectedWithTutor || false,
+            };
+          }),
         });
       })
       .catch((error) => {
@@ -335,7 +451,19 @@ exports.findTutor = (req, res, next) => {
     Tutor.find({}, excludedFields)
       .then((tutors) => {
         res.status(200).json({
-          tutors,
+          tutors: tutors.map((ft) => {
+            const doc = ft.toObject();
+            const isStudentConnectedWithTutor = doc.studentRequests.find(
+              (rs) => rs.id === req.id
+            );
+
+            delete doc.studentRequests;
+
+            return {
+              ...doc,
+              requestStatusWithTutor: isStudentConnectedWithTutor || false,
+            };
+          }),
         });
       })
       .catch((error) => {
@@ -356,7 +484,19 @@ exports.findTutor = (req, res, next) => {
         );
 
         res.status(200).json({
-          tutors: filteredTutors,
+          tutors: filteredTutors.map((ft) => {
+            const doc = ft.toObject();
+            const isStudentConnectedWithTutor = doc.studentRequests.find(
+              (rs) => rs.id === req.id
+            );
+
+            delete doc.studentRequests;
+
+            return {
+              ...doc,
+              requestStatusWithTutor: isStudentConnectedWithTutor || false,
+            };
+          }),
         });
       })
       .catch((error) => {

@@ -94,6 +94,25 @@ const studentSchema = new Schema(
   { _id: false }
 );
 
+const requestedStudentSchema = new Schema(
+  {
+    id: {
+      type: String,
+      required: true,
+    },
+    requestDate: {
+      type: Date,
+      required: true,
+    },
+    requestStatus: {
+      type: String,
+      enum: ["accepted", "rejected", "pending"],
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
 const tutorSchema = new Schema(
   {
     username: {
@@ -126,6 +145,11 @@ const tutorSchema = new Schema(
     },
     students: {
       type: [studentSchema],
+      required: true,
+      default: [],
+    },
+    studentRequests: {
+      type: [requestedStudentSchema],
       required: true,
       default: [],
     },

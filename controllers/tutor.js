@@ -153,6 +153,83 @@ exports.getProfileViewedStudents = (req, res, next) => {
     });
 };
 
+exports.getPendingConnectionRequests = (req, res, next) => {
+  const tutorId = req.id;
+
+  if (req.role !== "tutor") {
+    const error = new Error("Forbidden");
+    error.statusCode = 403;
+    throw error;
+  }
+
+  Tutor.findById(tutorId)
+    .then(async (tutorDoc) => {
+      if (!tutorDoc) {
+        const error = new Error("Tutor does not exist");
+        error.statusCode = 404;
+        throw error;
+      }
+      res.status(200).json({
+        message: "Connection Requests Fetched Successfully",
+        requests: tutorDoc.studentRequests.filter(
+          (sr) => sr.requestStatus === "pending"
+        ),
+      });
+    })
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
+
+exports.handleConnectionRequest = (req, res, next) => {
+  const tutorId = req.id;
+  const studentId = req.params.studentId;
+
+  if (req.role !== "tutor") {
+    const error = new Error("Forbidden");
+    error.statusCode = 403;
+    throw error;
+  }
+
+  let request;
+
+  Tutor.findById(tutorId)
+    .then(async (tutorDoc) => {
+      if (!tutorDoc) {
+        const error = new Error("Tutor does not exist");
+        error.statusCode = 404;
+        throw error;
+      }
+
+      request = tutorDoc.studentRequests.find((sr) => sr.id === studentId);
+
+      if (!request) {
+        const error = new Error("Request does not exist");
+        error.statusCode = 404;
+        throw error;
+      }
+
+      request.requestStatus = req.body.status;
+
+      return tutorDoc.save();
+    })
+    .then(() => {
+      res.status(200).json({
+        message: "Connection Request Updated Successfully",
+        request,
+      });
+    })
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
+
 exports.getProfile = (req, res, next) => {
   if (req.role !== "tutor") {
     const error = new Error("Forbidden");
