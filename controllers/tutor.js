@@ -188,6 +188,14 @@ exports.handleConnectionRequest = (req, res, next) => {
   const tutorId = req.id;
   const studentId = req.params.studentId;
 
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error("Validation failed");
+    error.statusCode = 400;
+    error.data = errors.array();
+    throw error;
+  }
+
   if (req.role !== "tutor") {
     const error = new Error("Forbidden");
     error.statusCode = 403;
