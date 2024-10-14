@@ -73,4 +73,6 @@ router.get("/courses", isAuth, studentController.getCourses);
 
 router.get("/connect-tutor/:tutorId", isAuth, studentController.connectTutor);
 
+router.get("/connected", isAuth, studentController.getConnectedTutors);
+
 module.exports = router;

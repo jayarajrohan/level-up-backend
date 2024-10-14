@@ -585,7 +585,7 @@ exports.updatePassword = (req, res, next) => {
     });
 };
 
-exports.getConnectedTutor = (req, res, next) => {
+exports.getConnectedTutors = (req, res, next) => {
   const studentId = req.id;
 
   if (req.role !== "student") {
@@ -601,6 +601,7 @@ exports.getConnectedTutor = (req, res, next) => {
         error.statusCode = 404;
         throw error;
       }
+
       res.status(200).json({
         message: "Connected Tutors Fetched Successfully",
         connectedTutors: studentDoc.connectedTutors,
