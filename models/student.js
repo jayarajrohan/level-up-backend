@@ -20,6 +20,10 @@ const studentSchema = new Schema(
       type: String,
       required: false,
     },
+    connectedTutors: {
+      type: [String],
+      required: false,
+    },
   },
   { timestamps: true }
 );

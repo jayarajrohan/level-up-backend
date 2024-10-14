@@ -584,3 +584,32 @@ exports.updatePassword = (req, res, next) => {
       next(error);
     });
 };
+
+exports.getConnectedTutor = (req, res, next) => {
+  const studentId = req.id;
+
+  if (req.role !== "student") {
+    const error = new Error("Forbidden");
+    error.statusCode = 403;
+    throw error;
+  }
+
+  Student.findById(studentId)
+    .then((studentDoc) => {
+      if (!studentDoc) {
+        const error = new Error("Student does not exist");
+        error.statusCode = 404;
+        throw error;
+      }
+      res.status(200).json({
+        message: "Connected Tutors Fetched Successfully",
+        connectedTutors: studentDoc.connectedTutors,
+      });
+    })
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};

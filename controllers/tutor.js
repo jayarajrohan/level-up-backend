@@ -203,6 +203,7 @@ exports.handleConnectionRequest = (req, res, next) => {
   }
 
   let request;
+  let tutor;
 
   Tutor.findById(tutorId)
     .then(async (tutorDoc) => {
@@ -212,7 +213,18 @@ exports.handleConnectionRequest = (req, res, next) => {
         throw error;
       }
 
-      request = tutorDoc.studentRequests.find((sr) => sr.id === studentId);
+      tutor = tutorDoc;
+
+      return Student.findById(studentId);
+    })
+    .then((studentDoc) => {
+      if (!studentDoc) {
+        const error = new Error("Student does not exist");
+        error.statusCode = 404;
+        throw error;
+      }
+
+      request = tutor.studentRequests.find((sr) => sr.id === studentId);
 
       if (!request) {
         const error = new Error("Request does not exist");
@@ -220,9 +232,16 @@ exports.handleConnectionRequest = (req, res, next) => {
         throw error;
       }
 
+      if (req.body.status === "accepted") {
+        studentDoc.connectedTutors.push(tutor._id.toString());
+      }
+
+      return studentDoc.save();
+    })
+    .then(() => {
       request.requestStatus = req.body.status;
 
-      return tutorDoc.save();
+      return tutor.save();
     })
     .then(() => {
       res.status(200).json({
