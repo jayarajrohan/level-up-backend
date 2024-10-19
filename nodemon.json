@@ -1,6 +1,8 @@
 {
   "env": {
     "MONGO_DB_CONNECTION_STRING": "mongodb+srv://rohan:HIZM0yhu02sgItDw@level-up.c4tykf6.mongodb.net/level-up?retryWrites=true&w=majority&appName=level-up",
-    "FRONTEND_SERVER": "http://localhost:8080"
+    "FRONTEND_SERVER": "http://localhost:8080",
+    "EMAIL": "rohanonfirealways@gmail.com",
+    "PASSWORD": "jula wmft zmuy dqzn"
   }
 }

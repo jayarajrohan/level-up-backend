@@ -7,6 +7,7 @@ const Student = require("../models/student");
 const Tutor = require("../models/tutor");
 const Course = require("../models/course");
 const { jwtSecret } = require("../util/jwt-secret");
+const emailService = require("../services/emailService");
 
 exports.login = (req, res, next) => {
   const errors = validationResult(req);
@@ -86,6 +87,7 @@ exports.createStudent = (req, res, next) => {
   }
 
   const data = matchedData(req);
+  let newStudent;
 
   Student.findOne({ username: data.username })
     .then((studentDoc) => {
@@ -98,14 +100,27 @@ exports.createStudent = (req, res, next) => {
       bcrypt
         .hash(data.password, 12)
         .then((hashedPassword) => {
-          const student = new Student({
+          newStudent = new Student({
             username: data.username,
             email: data.email,
             name: data.name,
             password: hashedPassword,
           });
 
-          return student.save();
+          if (data.email) {
+            return emailService.sendEmail(
+              true,
+              data.username,
+              data.password,
+              data.email,
+              "Your Level Up Credentials"
+            );
+          }
+
+          return Promise.resolve();
+        })
+        .then(() => {
+          return newStudent.save();
         })
         .then((student) => {
           res
@@ -325,6 +340,7 @@ exports.createTutor = (req, res, next) => {
   }
 
   const data = matchedData(req);
+  let newTutor;
 
   Tutor.findOne({ username: data.username })
     .then((tutorDoc) => {
@@ -337,7 +353,7 @@ exports.createTutor = (req, res, next) => {
       bcrypt
         .hash(data.password, 12)
         .then((hashedPassword) => {
-          const tutor = new Tutor({
+          newTutor = new Tutor({
             username: data.username,
             password: hashedPassword,
             name: data.name,
@@ -346,7 +362,20 @@ exports.createTutor = (req, res, next) => {
             contactDetails: data.contactDetails,
           });
 
-          return tutor.save();
+          if (data.email) {
+            return emailService.sendEmail(
+              false,
+              data.username,
+              data.password,
+              data.email,
+              "Your Level Up Credentials"
+            );
+          }
+
+          return Promise.resolve();
+        })
+        .then(() => {
+          return newTutor.save();
         })
         .then((tutor) => {
           res
