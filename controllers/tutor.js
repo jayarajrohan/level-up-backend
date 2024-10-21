@@ -52,6 +52,7 @@ exports.login = (req, res, next) => {
         role: "TUTOR",
         tutor: {
           id: foundTutor._id.toString(),
+          username: foundTutor.username,
         },
       });
     })
@@ -184,6 +185,37 @@ exports.getPendingConnectionRequests = (req, res, next) => {
     });
 };
 
+exports.getAcceptedConnectionRequests = (req, res, next) => {
+  const tutorId = req.id;
+
+  if (req.role !== "tutor") {
+    const error = new Error("Forbidden");
+    error.statusCode = 403;
+    throw error;
+  }
+
+  Tutor.findById(tutorId)
+    .then(async (tutorDoc) => {
+      if (!tutorDoc) {
+        const error = new Error("Tutor does not exist");
+        error.statusCode = 404;
+        throw error;
+      }
+      res.status(200).json({
+        message: "Connection Requests Fetched Successfully",
+        requests: tutorDoc.studentRequests.filter(
+          (sr) => sr.requestStatus === "accepted"
+        ),
+      });
+    })
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
+
 exports.handleConnectionRequest = (req, res, next) => {
   const tutorId = req.id;
   const studentId = req.params.studentId;
@@ -233,7 +265,10 @@ exports.handleConnectionRequest = (req, res, next) => {
       }
 
       if (req.body.status === "accepted") {
-        studentDoc.connectedTutors.push(tutor._id.toString());
+        studentDoc.connectedTutors.push({
+          id: tutor._id.toString(),
+          username: tutor.username,
+        });
       }
 
       return studentDoc.save();

@@ -52,6 +52,7 @@ exports.login = (req, res, next) => {
         role: "STUDENT",
         student: {
           id: foundStudent._id.toString(),
+          username: foundStudent.username,
         },
       });
     })
@@ -286,6 +287,7 @@ exports.connectTutor = (req, res, next) => {
 
       tutorDoc.studentRequests.push({
         id: foundStudent._id,
+        username: foundStudent.username,
         requestDate: new Date(),
         requestStatus: "pending",
       });

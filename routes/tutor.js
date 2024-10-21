@@ -79,6 +79,12 @@ router.get(
   tutorControllers.getPendingConnectionRequests
 );
 
+router.get(
+  "/accepted-requests",
+  isAuth,
+  tutorControllers.getAcceptedConnectionRequests
+);
+
 router.post(
   "/request/:studentId",
   isAuth,

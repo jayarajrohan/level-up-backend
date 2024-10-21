@@ -3,16 +3,28 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
 const compression = require("compression");
+const http = require("http");
+const socketIo = require("socket.io");
 
 const adminRoutes = require("./routes/admin");
 const tutorRoutes = require("./routes/tutor");
 const studentRoutes = require("./routes/student");
 
+const Message = require("./models/message");
+
 const app = express();
+const server = http.createServer(app);
+
+const io = socketIo(server, {
+  cors: {
+    origin: process.env.FRONTEND_SERVER,
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
 
 app.use(helmet());
 app.use(compression());
-
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
@@ -41,6 +53,50 @@ app.use((error, req, res) => {
 mongoose
   .connect(process.env.MONGO_DB_CONNECTION_STRING)
   .then(() => {
-    app.listen(process.env.PORT || 8081);
+    server.listen(process.env.PORT || 8081);
   })
   .catch((err) => console.log(err));
+
+io.on("connection", (socket) => {
+  socket.on("joinRoom", async ({ studentUsername, tutorUsername }) => {
+    const roomId = `${studentUsername}_${tutorUsername}`;
+    socket.join(roomId);
+    console.log(`User joined room: ${roomId}`);
+
+    try {
+      const messages = await Message.find({ roomId })
+        .sort({ createdAt: 1 })
+        .exec();
+      socket.emit("loadOldMessages", messages);
+    } catch {
+      console.error("Error retrieving messages: ", err);
+    }
+  });
+
+  socket.on("sendMessage", async ({ roomId, message, senderUsername }) => {
+    const newMessage = new Message({
+      roomId,
+      message,
+      senderUsername,
+    });
+
+    try {
+      await newMessage.save();
+      io.to(roomId).emit("receiveMessage", { roomId, senderUsername, message });
+      console.log(
+        `Message sent to room ${roomId}: ${senderUsername}, message: ${message}`
+      );
+    } catch (err) {
+      console.error("Error saving message: ", err);
+    }
+
+    console.log(
+      `Message sent to room ${roomId}: ${senderUsername}, message:${message}`
+    );
+  });
+
+  // Handle client disconnect
+  socket.on("disconnect", () => {
+    console.log("Client disconnected", socket.id);
+  });
+});

@@ -100,6 +100,10 @@ const requestedStudentSchema = new Schema(
       type: String,
       required: true,
     },
+    username: {
+      type: String,
+      required: true,
+    },
     requestDate: {
       type: Date,
       required: true,
