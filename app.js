@@ -67,7 +67,7 @@ io.on("connection", (socket) => {
       const messages = await Message.find({ roomId })
         .sort({ createdAt: 1 })
         .exec();
-      socket.emit("loadOldMessages", messages);
+      socket.on("loadOldMessages", messages);
     } catch {
       console.error("Error retrieving messages: ", err);
     }
