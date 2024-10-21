@@ -4,11 +4,11 @@ const Schema = mongoose.Schema;
 
 const messageSchema = new Schema(
   {
-    roomId: {
+    senderUsername: {
       type: String,
       required: true,
     },
-    message: {
+    receiverUsername: {
       type: String,
       required: true,
     },
@@ -16,7 +16,7 @@ const messageSchema = new Schema(
       type: Boolean,
       default: true,
     },
-    senderUsername: {
+    message: {
       type: String,
       required: true,
     },

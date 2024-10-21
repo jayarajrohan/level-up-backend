@@ -58,11 +58,13 @@ mongoose
   .catch((err) => console.log(err));
 
 io.on("connection", (socket) => {
-  socket.on("joinRoom", ({ studentUsername, tutorUsername }) => {
-    const roomId = `${studentUsername}_${tutorUsername}`;
-    socket.join(roomId);
+  const onSocketJoin = async (username) => {
+    socket.join(username);
+    console.log(`${username} joined the room`);
 
-    Message.find({ roomId })
+    await Message.find({
+      $or: [{ receiverUsername: username }, { senderUsername: username }],
+    })
       .sort({ createdAt: 1 })
       .exec()
       .then((messages) => {
@@ -71,31 +73,54 @@ io.on("connection", (socket) => {
       .catch((err) => {
         console.error("Error retrieving messages: ", err);
       });
+  };
+
+  socket.on("joinRoom", async (username) => {
+    await onSocketJoin(username);
   });
 
-  socket.on("sendMessage", async ({ roomId, message, senderUsername }) => {
-    const newMessage = new Message({
-      roomId,
-      message,
-      senderUsername,
-      isRead: false,
-    });
+  socket.on(
+    "sendMessage",
+    async ({ senderUsername, receiverUsername, message }) => {
+      const roomLength =
+        io.sockets.adapter.rooms.get(senderUsername)?.size || 0;
 
-    newMessage
-      .save()
-      .then((storedMessage) => {
-        io.to(roomId).emit("receiveMessage", {
-          roomId: storedMessage.roomId,
-          messageId: storedMessage._id.toString(),
-          senderUsername: storedMessage.senderUsername,
-          createdAt: storedMessage.createdAt.toUTCString(),
-          message: storedMessage.message,
+      if (roomLength === 0) {
+        await onSocketJoin(senderUsername);
+      }
+
+      if (roomLength !== 0) {
+        const newMessage = new Message({
+          senderUsername,
+          receiverUsername,
+          isRead: false,
+          message,
         });
-      })
-      .catch((err) => {
-        console.error("Error saving message: ", err);
-      });
-  });
+
+        newMessage
+          .save()
+          .then((storedMessage) => {
+            io.to(senderUsername).emit("receiveMessage", {
+              senderUsername: storedMessage.senderUsername,
+              receiverUsername: storedMessage.receiverUsername,
+              messageId: storedMessage._id.toString(),
+              createdAt: storedMessage.createdAt.toUTCString(),
+              message: storedMessage.message,
+            });
+            io.to(receiverUsername).emit("receiveMessage", {
+              senderUsername: storedMessage.senderUsername,
+              receiverUsername: storedMessage.receiverUsername,
+              messageId: storedMessage._id.toString(),
+              createdAt: storedMessage.createdAt.toUTCString(),
+              message: storedMessage.message,
+            });
+          })
+          .catch((err) => {
+            console.error("Error saving message: ", err);
+          });
+      }
+    }
+  );
 
   socket.on("disconnect", (reason) => {
     console.log(`Disconnected: ${reason}`);
