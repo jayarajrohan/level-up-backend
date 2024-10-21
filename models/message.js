@@ -12,6 +12,10 @@ const messageSchema = new Schema(
       type: String,
       required: true,
     },
+    isRead: {
+      type: Boolean,
+      default: true,
+    },
     senderUsername: {
       type: String,
       required: true,

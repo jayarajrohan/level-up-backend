@@ -58,19 +58,19 @@ mongoose
   .catch((err) => console.log(err));
 
 io.on("connection", (socket) => {
-  socket.on("joinRoom", async ({ studentUsername, tutorUsername }) => {
+  socket.on("joinRoom", ({ studentUsername, tutorUsername }) => {
     const roomId = `${studentUsername}_${tutorUsername}`;
     socket.join(roomId);
-    console.log(`User joined room: ${roomId}`);
 
-    try {
-      const messages = await Message.find({ roomId })
-        .sort({ createdAt: 1 })
-        .exec();
-      socket.emit("loadOldMessages", messages);
-    } catch {
-      console.error("Error retrieving messages: ", err);
-    }
+    Message.find({ roomId })
+      .sort({ createdAt: 1 })
+      .exec()
+      .then((messages) => {
+        socket.emit("loadOldMessages", messages);
+      })
+      .catch((err) => {
+        console.error("Error retrieving messages: ", err);
+      });
   });
 
   socket.on("sendMessage", async ({ roomId, message, senderUsername }) => {
@@ -78,25 +78,26 @@ io.on("connection", (socket) => {
       roomId,
       message,
       senderUsername,
+      isRead: false,
     });
 
-    try {
-      await newMessage.save();
-      io.to(roomId).emit("receiveMessage", { roomId, senderUsername, message });
-      console.log(
-        `Message sent to room ${roomId}: ${senderUsername}, message: ${message}`
-      );
-    } catch (err) {
-      console.error("Error saving message: ", err);
-    }
-
-    console.log(
-      `Message sent to room ${roomId}: ${senderUsername}, message:${message}`
-    );
+    newMessage
+      .save()
+      .then((storedMessage) => {
+        io.to(roomId).emit("receiveMessage", {
+          roomId: storedMessage.roomId,
+          messageId: storedMessage._id.toString(),
+          senderUsername: storedMessage.senderUsername,
+          createdAt: storedMessage.createdAt.toUTCString(),
+          message: storedMessage.message,
+        });
+      })
+      .catch((err) => {
+        console.error("Error saving message: ", err);
+      });
   });
 
-  // Handle client disconnect
-  socket.on("disconnect", () => {
-    console.log("Client disconnected", socket.id);
+  socket.on("disconnect", (reason) => {
+    console.log(`Disconnected: ${reason}`);
   });
 });
